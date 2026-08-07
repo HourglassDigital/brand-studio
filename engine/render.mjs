@@ -21,7 +21,7 @@ export class LegibilityError extends Error {
 }
 
 // Find a usable Chromium/Chrome binary without forcing a download.
-function resolveExecutable() {
+export function resolveExecutable() {
   if (process.env.PW_CHROME && fs.existsSync(process.env.PW_CHROME)) return process.env.PW_CHROME;
   const caches = [
     path.join(os.homedir(), "Library/Caches/ms-playwright"), // macOS

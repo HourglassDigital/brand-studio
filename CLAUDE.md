@@ -128,7 +128,7 @@ hook installs the Node dependency on first run.
 
 | Skill | What it does |
 |---|---|
-| `/create-brand` | Walk the user (via AskUserQuestion) through onboarding: upload assets (examples, logo, fonts) → analyse → build the brand kit, capturing the house-style spec carefully. |
+| `/create-brand` | Walk the user (via AskUserQuestion) through onboarding: upload assets (examples, logo, fonts) and/or give a website link (palette, fonts and logo are mined from the live site, and the homepage is screenshotted as a reference) → analyse → build the brand kit, capturing the house-style spec carefully. |
 | `/collect-inspo` | Teach a saved brand its taste: ingest URLs / files / a Notion swipe file / named accounts, then distil into archetypes + visual grammar + dos/don'ts saved as `inspiration.json`. Additive: re-run to extend. |
 | `/create-asset` | Generate an on-brand asset: ask brand/shape/post-type → compose copy + author `{css, body}` (around the closest-fit inspiration archetype when one exists) → render → adversarial self-review → edit loop → offer to save preferences. |
 | `/edit-brand` | Deliberately change a saved brand's base kit (palette, fonts, logo, voice, house style, handle/CTA) and re-render a test. |
@@ -169,6 +169,7 @@ Each skill is question-driven (AskUserQuestion) so the user is directed through 
 hooks/                 SessionStart dependency-install hook
 engine/                thin renderer + brandctl + shapes (ES modules)
   render.mjs           HTML + brand + shape → PNG/PDF
+  snap.mjs             live URL → PNG (website reference capture for /create-brand)
   cli.mjs              brand + shape + {css,body} → render
   brandctl.mjs         brand kit + preferences + inspiration management CLI
   brand.mjs            brand tokens + logo + htmlDoc() preamble

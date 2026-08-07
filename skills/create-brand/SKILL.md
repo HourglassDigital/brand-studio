@@ -1,6 +1,6 @@
 ---
 name: create-brand
-description: Onboard a new brand by learning it from its own assets and saving it as a reusable brand kit. Walks the user through it with questions, then drops in 1-3 example graphics, a logo, fonts and a palette and analyses the look into a saved brand.json (palette, fonts, logo, voice, house-style spec). Use when the user says "create a brand", "add my brand", "set up a brand", "learn my style", "onboard a new client/creator/influencer", or provides brand assets.
+description: Onboard a new brand by learning it from its own assets and saving it as a reusable brand kit. Walks the user through it with questions, then drops in 1-3 example graphics, a logo, fonts, a palette and/or their website and analyses the look into a saved brand.json (palette, fonts, logo, voice, house-style spec). Use when the user says "create a brand", "add my brand", "set up a brand", "learn my style", "learn my brand from my website", "onboard a new client/creator/influencer", or provides brand assets or a brand URL.
 ---
 
 # Create a brand (learn it once, reuse it forever)
@@ -14,8 +14,16 @@ Onboard a brand into a saved **brand kit** that every future asset is generated 
 ## Steps
 
 1. **Find out what they have to teach the brand** (`AskUserQuestion`, `multiSelect: true`):
-   - Header `Inputs`, question "What do you have to teach me this brand?", options: `Example graphics` (their existing posts: best signal), `Logo file`, `Brand fonts`, `Palette / hex codes`, plus they can type "just a description" or name a brand to emulate.
-   Then ask, in normal conversation, for the actual files or folder paths for whatever they selected. If they give a folder, list it to find the assets. If they have no examples, ask them to describe the aesthetic or name a brand to emulate.
+   - Header `Inputs`, question "What do you have to teach me this brand?", options: `Example graphics` (their existing posts: best signal), `Website link` (their site: I'll pull colours, fonts and logo from it), `Logo file`, `Fonts / palette` (font files or Google Font names, and/or known hex codes), plus they can type "just a description" or name a brand to emulate.
+   Then ask, in normal conversation, for the actual files, folder paths or URL for whatever they selected. If they give a folder, list it to find the assets. If they have no examples, ask them to describe the aesthetic or name a brand to emulate.
+
+   **If they chose `Website link`:** ask for the URL, then mine the live site:
+   - Fetch the page HTML and its linked CSS (WebFetch or `curl`). Extract the palette (hex/rgb values actually used for backgrounds, text and accents), the font families (`@font-face` and `font-family` declarations; note Google Fonts links), and the logo (`<img>`/inline SVG in the header, or the og:image / favicon as a fallback). Download the logo and any self-hosted font files into `assets/`.
+   - Screenshot the homepage as a visual reference into `examples/` so analysis can ground on how the site actually looks, not just its raw tokens:
+     ```bash
+     node "$ENGINE/snap.mjs" <url> "<examples>/website.png"        # add --full for the whole page
+     ```
+   - A website is a good signal for palette, fonts and logo but a *weak* signal for social house style (sites are laid out nothing like posts), so when examples are also available they win for houseStyle; the site fills the token gaps.
 
 2. **Capture identity** (`AskUserQuestion` where it helps; free text for specifics):
    - Get the brand/creator **name**, **handle** (e.g. `@jane`), and **CTA** (e.g. "Book a call").
