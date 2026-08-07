@@ -100,6 +100,19 @@ through): `brand-add` → **`create-brand`**, `create` → **`create-asset`**, p
   on a temp brand, badge confirmed at pixel level on light and dark backgrounds.
   Engine tests 29/29, run repeatedly after a byte-comparison flake was removed.
 
+## Update — 2026-08-07 (website-link brand intake)
+
+- `/create-brand` intake question now offers **`Website link`**: the skill asks for the
+  URL, mines the live site's CSS for palette hexes and font families, downloads the logo
+  and self-hosted fonts, and screenshots the homepage into `examples/` for grounding.
+  `Brand fonts` and `Palette / hex codes` merged into one `Fonts / palette` option to
+  stay within AskUserQuestion's 4-option cap. The skill notes a site is a strong token
+  signal but weak for social house style, so real example graphics win for `houseStyle`.
+- New `engine/snap.mjs` (URL → PNG: `--width/--height/--full`), reusing the engine's
+  Chrome resolution (`resolveExecutable` now exported from `render.mjs`), with a
+  load-event fallback for sites that never reach network-idle. Verified against a live
+  site; engine tests 29/29.
+
 ## Update — 2026-06-19 (taste layer + `/collect-inspo`)
 
 Added a fourth data concept to the brand repository: **inspiration**, captured by a new
