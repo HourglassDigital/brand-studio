@@ -53,7 +53,7 @@ Three ideas make it work:
 
 ## Install
 
-**1. Already have [Claude Code](https://code.claude.com/docs/en/setup)?** Two commands:
+**Option A. Already have [Claude Code](https://code.claude.com/docs/en/setup)?** Two commands:
 
 ```bash
 claude plugin marketplace add HourglassDigital/brand-studio
@@ -63,7 +63,7 @@ claude plugin install brand-studio@hourglass
 Then **start a new Claude Code session** (plugins load when a session starts) and type `/` —
 you'll see `/create-brand`, `/collect-inspo`, `/create-asset`, `/edit-brand`.
 
-**2. Starting from scratch?** Open Terminal and paste this:
+**Option B. Starting from scratch?** Open Terminal and paste this:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/HourglassDigital/brand-studio/main/install.sh | bash
