@@ -1,0 +1,13 @@
+{
+  "name": "brand-studio-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Thin brand render engine: a saved brand kit + Claude-authored HTML/CSS + a shape -> PNG/PDF via headless Chromium.",
+  "scripts": {
+    "test": "node --test 'test/*.test.mjs'"
+  },
+  "dependencies": {
+    "playwright-core": "^1.49.0"
+  }
+}

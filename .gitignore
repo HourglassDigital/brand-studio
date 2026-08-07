@@ -1,0 +1,32 @@
+engine/node_modules/
+engine/out/
+*.log
+.DS_Store
+
+# --- brand data must never be committed --------------------------------------
+# This repo is PUBLIC and ships with a clean slate: brand kits live in the plugin
+# data dir (${CLAUDE_PLUGIN_DATA}, or ~/.brand-studio), never here. These guards
+# stop a client's logo, fonts, example posts or rendered assets being committed by
+# accident while testing locally. Documentation images are still allowed: put them
+# under docs/ (re-included at the bottom).
+brands/
+.brand-studio/
+
+# Brand fonts (licensed: redistributing them would be a licence breach).
+*.woff
+*.woff2
+*.ttf
+*.otf
+*.eot
+
+# Client artwork, reference examples and rendered output.
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.svg
+*.pdf
+
+# Screenshots for the README live here and are safe to publish.
+!docs/**

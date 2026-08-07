@@ -1,0 +1,14 @@
+{
+  "name": "hourglass",
+  "owner": {
+    "name": "Hourglass Digital",
+    "url": "https://thehourglass.ai"
+  },
+  "plugins": [
+    {
+      "name": "brand-studio",
+      "source": "./",
+      "description": "Learn a brand from its own assets, then generate new on-brand graphics from a prompt, at any standard social shape."
+    }
+  ]
+}

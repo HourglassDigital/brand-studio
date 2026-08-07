@@ -1,0 +1,11 @@
+{
+  "name": "brand-studio",
+  "version": "0.4.0",
+  "description": "Learn a brand from its own assets, then generate new on-brand graphics from a prompt. Renders real HTML/CSS so the brand match is exact and text is never garbled.",
+  "author": {
+    "name": "Hourglass Digital",
+    "url": "https://thehourglass.ai"
+  },
+  "homepage": "https://thehourglass.ai",
+  "keywords": ["brand", "branding", "design", "content", "social", "instagram", "linkedin", "influencer"]
+}
