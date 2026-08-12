@@ -1,0 +1,6 @@
+{ "type": "bar", "title": "By quarter",
+  "series": [
+    { "name": "2023", "values": [{ "x": "Q1", "y": 3 }, { "x": "Q2", "y": 5 }, { "x": "Q3", "y": 4 }] },
+    { "name": "2024", "values": [{ "x": "Q1", "y": 6 }, { "x": "Q2", "y": 7 }, { "x": "Q3", "y": 9 }] }
+  ],
+  "size": { "width": 800, "height": 550 } }

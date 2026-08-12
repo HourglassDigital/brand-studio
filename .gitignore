@@ -1,5 +1,7 @@
 engine/node_modules/
 engine/out/
+chart-engine/node_modules/
+chart-engine/out/
 *.log
 .DS_Store
 

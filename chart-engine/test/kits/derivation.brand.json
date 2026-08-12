@@ -1,0 +1,34 @@
+{
+  "slug": "derivation-fixture",
+  "name": "Derivation Fixture",
+  "_comment": [
+    "A synthetic, FONTLESS kit that exists only to exercise lib/render/palette.mjs.",
+    "It is deliberately not a client kit: the template repo must never need one to",
+    "run its own tests. Three well-separated identity hues, so slot capacity is",
+    "greater than the declared hue count and the derivation ladder is actually",
+    "exercised. Change these hex values and the pinned hexes in palette.test.mjs",
+    "must be regenerated with them."
+  ],
+  "palette": {
+    "bg": "#FFFFFF",
+    "surface": "#FFFFFF",
+    "ink": "#1A1A1A",
+    "muted": "#6E6E6E",
+    "line": "#E6E6E6",
+    "primary": "#1F6FEB",
+    "secondary": "#E4572E",
+    "tertiary": "#8B5CF6"
+  },
+  "fonts": {
+    "headline": { "family": "system-ui", "files": [] },
+    "body": { "family": "system-ui", "files": [] }
+  },
+  "chart": {
+    "cornerRadius": 8,
+    "borderWidth": 2,
+    "gridStyle": "plain",
+    "hues": ["primary", "secondary", "tertiary"],
+    "series": ["primary", "secondary"],
+    "defaultSize": { "width": 1600, "height": 1100 }
+  }
+}

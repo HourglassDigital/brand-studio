@@ -1,0 +1,39 @@
+{
+  "type": "pie",
+  "donut": true,
+  "title": "Ordered slices take a single-hue blend",
+  "series": [
+    {
+      "name": "revenue",
+      "values": [
+        {
+          "x": "Tier 1",
+          "y": 40
+        },
+        {
+          "x": "Tier 2",
+          "y": 27
+        },
+        {
+          "x": "Tier 3",
+          "y": 18
+        },
+        {
+          "x": "Tier 4",
+          "y": 10
+        },
+        {
+          "x": "Tier 5",
+          "y": 5
+        }
+      ]
+    }
+  ],
+  "watermark": "TEMPLATE BRAND",
+  "footer": "Source: fixture data",
+  "size": {
+    "width": 800,
+    "height": 550
+  },
+  "ordered": true
+}

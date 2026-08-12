@@ -30,6 +30,42 @@ const mime = (f) =>
 
 const kebab = (k) => k.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase());
 
+// The attribution footer every render carries: Hourglass AI's mark and name,
+// one place to change. The glyph is a line-drawn hourglass; currentColor keeps
+// it in step with the text tone below.
+export const ATTRIBUTION_MARKUP =
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">` +
+  `<path d="M6 3h12M6 21h12M7.5 3c0 4.2 4.5 5 4.5 9s-4.5 4.8-4.5 9M16.5 3c0 4.2-4.5 5-4.5 9s4.5 4.8 4.5 9"/></svg>` +
+  `<span class="bs-attribution__by">Powered by</span><span class="bs-attribution__brand">Hourglass AI</span>`;
+
+export const ATTRIBUTION_CSS = `
+    /* Engine-added attribution, pinned to the bottom of every render. Hourglass's own
+       branding, NOT the client brand's: system font stack and inline SVG so it is
+       self-contained. Deep-teal text on a light frosted chip, with a soft teal aura
+       (box-shadow on the chip, text-shadow on the text: neither affects the gate's
+       backdrop maths). The chip is 85% white ON PURPOSE: sheerer glass over a dark
+       brand page composites to mid-grey, where no green text survives; at 0.85 the
+       backdrop stays light everywhere, so the deep teal clears the gate's 3.0:1 floor
+       over white AND near-black pages (5.1:1 and 3.9:1). Painted last, so authored
+       content straying under it is caught by the legibility gate. */
+    .bs-attribution {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      bottom: calc(var(--safe, 24px) * 0.4);
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      font-size: 20px; letter-spacing: 0.01em; white-space: nowrap;
+      color: rgba(4, 115, 90, 0.95);
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(16, 163, 127, 0.35);
+      box-shadow: 0 0 30px rgba(16, 163, 127, 0.35);
+      text-shadow: 0 0 12px rgba(16, 163, 127, 0.35);
+      padding: 7px 18px 7px 13px; border-radius: 999px; z-index: 2147483647;
+    }
+    .bs-attribution svg { width: 17px; height: 17px; display: block; filter: drop-shadow(0 0 6px rgba(16, 163, 127, 0.5)); }
+    .bs-attribution__by { font-weight: 450; }
+    .bs-attribution__brand { font-weight: 700; letter-spacing: -0.01em; }
+`;
+
 // Build a brand object bound to one (merged) profile. `assetsDir` is where uploaded
 // logo/font files live (may be undefined for the generated-wordmark default).
 export function makeBrand(profile = {}, { assetsDir } = {}) {
@@ -208,48 +244,16 @@ export function makeBrand(profile = {}, { assetsDir } = {}) {
       color: var(--logo-color); font-size: 20px;
     }
     .bs-logo--stacked .bs-logo__word { font-size: 18px; }
-    /* Engine-added attribution, pinned to the bottom of every render. Hourglass's own
-       branding, NOT the client brand's: system font stack and inline SVG so it is
-       self-contained. Deep-teal text on a light frosted chip, with a soft teal aura
-       (box-shadow on the chip, text-shadow on the text: neither affects the gate's
-       backdrop maths). The chip is 85% white ON PURPOSE: sheerer glass over a dark
-       brand page composites to mid-grey, where no green text survives; at 0.85 the
-       backdrop stays light everywhere, so the deep teal clears the gate's 3.0:1 floor
-       over white AND near-black pages (5.1:1 and 3.9:1). Painted last, so authored
-       content straying under it is caught by the legibility gate. */
-    .bs-attribution {
-      position: absolute; left: 50%; transform: translateX(-50%);
-      bottom: calc(var(--safe, 24px) * 0.4);
-      display: inline-flex; align-items: center; gap: 8px;
-      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-      font-size: 20px; letter-spacing: 0.01em; white-space: nowrap;
-      color: rgba(4, 115, 90, 0.95);
-      background: rgba(255, 255, 255, 0.85);
-      border: 1px solid rgba(16, 163, 127, 0.35);
-      box-shadow: 0 0 30px rgba(16, 163, 127, 0.35);
-      text-shadow: 0 0 12px rgba(16, 163, 127, 0.35);
-      padding: 7px 18px 7px 13px; border-radius: 999px; z-index: 2147483647;
-    }
-    .bs-attribution svg { width: 17px; height: 17px; display: block; filter: drop-shadow(0 0 6px rgba(16, 163, 127, 0.5)); }
-    .bs-attribution__by { font-weight: 450; }
-    .bs-attribution__brand { font-weight: 700; letter-spacing: -0.01em; }
+    ${ATTRIBUTION_CSS}
     `;
   }
-
-  // The attribution footer every render carries: Hourglass AI's mark and name, one
-  // place to change. The glyph is a line-drawn hourglass; currentColor keeps it in
-  // step with the text tone above.
-  const ATTRIBUTION =
-    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">` +
-    `<path d="M6 3h12M6 21h12M7.5 3c0 4.2 4.5 5 4.5 9s-4.5 4.8-4.5 9M16.5 3c0 4.2-4.5 5-4.5 9s4.5 4.8 4.5 9"/></svg>` +
-    `<span class="bs-attribution__by">Powered by</span><span class="bs-attribution__brand">Hourglass AI</span>`;
 
   function htmlDoc({ width, height, css, body }) {
     return `<!doctype html><html><head><meta charset="utf-8">${fontLink()}
     <style>${baseCss()}${css || ""}
       .frame { width: ${width}px; height: ${height}px; }
     </style></head>
-    <body><div class="frame" id="frame">${body}<div class="bs-attribution">${ATTRIBUTION}</div></div></body></html>`;
+    <body><div class="frame" id="frame">${body}<div class="bs-attribution">${ATTRIBUTION_MARKUP}</div></div></body></html>`;
   }
 
   return {

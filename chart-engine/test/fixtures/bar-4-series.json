@@ -1,0 +1,11 @@
+{
+  "type": "bar",
+  "title": "Four series exercises colour derivation",
+  "subtitle": "units",
+  "series": [
+    { "name": "Alpha", "values": [{ "x": "Q1", "y": 42 }, { "x": "Q2", "y": 51 }, { "x": "Q3", "y": 63 }] },
+    { "name": "Beta", "values": [{ "x": "Q1", "y": 30 }, { "x": "Q2", "y": 34 }, { "x": "Q3", "y": 39 }] },
+    { "name": "Gamma", "values": [{ "x": "Q1", "y": 12 }, { "x": "Q2", "y": 19 }, { "x": "Q3", "y": 28 }] },
+    { "name": "Delta", "values": [{ "x": "Q1", "y": 8 }, { "x": "Q2", "y": 11 }, { "x": "Q3", "y": 14 }] }
+  ]
+}
