@@ -9,7 +9,7 @@ Onboard a brand into a saved **brand kit** that every future asset is generated 
 
 **Drive this with questions.** Use `AskUserQuestion` at each decision below rather than asking in free text, so the user is walked through onboarding. Skip a question only when its answer is already obvious from what they gave you.
 
-`ENGINE="${CLAUDE_PLUGIN_ROOT}/engine"`.
+`ENGINE="${CLAUDE_PLUGIN_ROOT}/engine"`. (In Claude Code, `CLAUDE_PLUGIN_ROOT` is set automatically. Running outside Claude Code — e.g. as a Codex skill — the variable is unset: use the repo root that contains this skill instead, i.e. the folder two levels up from this SKILL.md, so `ENGINE=<repo-root>/engine`. If `engine/node_modules` is missing there, run `npm install` in `engine/` once first.)
 
 ## Steps
 

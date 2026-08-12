@@ -72,6 +72,21 @@ curl -fsSL https://raw.githubusercontent.com/HourglassDigital/brand-studio/main/
 It checks what you need, installs Claude Code and the plugin, and tells you the two things
 to type.
 
+**Option C. Using OpenAI Codex instead?** The same skills drive Codex (it reads the
+SKILL.md standard). Paste this into a Codex session and let it do the work:
+
+```
+Install Brand Studio: git clone https://github.com/HourglassDigital/brand-studio
+into ~/.agents/skills/brand-studio, then run npm install inside
+~/.agents/skills/brand-studio/engine.
+```
+
+Restart Codex and type `$create-brand` (or just ask for an on-brand graphic). Brands are
+saved in `~/.brand-studio`, so kits made in Claude Code and Codex are shared. Same
+requirements as Claude Code minus the Claude plan: Node.js + npm, and Google Chrome or a
+Playwright Chromium to render with. Codex has no SessionStart hooks, so updates are manual:
+`git -C ~/.agents/skills/brand-studio pull`.
+
 Either way, start with `/create-brand`: it walks you through teaching it a brand and hands
 you on to the rest when it's done. Have 2-3 screenshots of posts you like the look of ready:
 that's the only input that really matters.

@@ -9,7 +9,7 @@ Turn a topic, tweet, paragraph or idea into a finished on-brand graphic. The cop
 
 **Drive this with questions.** Use `AskUserQuestion` for the directed choices below so the user is walked through it. Skip a question when the prompt already answers it (e.g. they said "an Instagram story about X" → shape is `ig-story`, topic is X).
 
-`ENGINE="${CLAUDE_PLUGIN_ROOT}/engine"` — run all commands with that path.
+`ENGINE="${CLAUDE_PLUGIN_ROOT}/engine"` — run all commands with that path. (In Claude Code, `CLAUDE_PLUGIN_ROOT` is set automatically. Running outside Claude Code — e.g. as a Codex skill — the variable is unset: use the repo root that contains this skill instead, i.e. the folder two levels up from this SKILL.md, so `ENGINE=<repo-root>/engine`. If `engine/node_modules` is missing there, run `npm install` in `engine/` once first.)
 
 ## Steps
 
