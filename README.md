@@ -105,7 +105,8 @@ claude plugin list        # brand-studio@hourglass → enabled, no errors
 - **A paid Claude plan** (Pro or Max). Claude Code isn't on the free tier.
 - **Node.js + npm** — the installer checks for it, and installs it via Homebrew if it can.
   On first run a `SessionStart` hook quietly installs the one engine dependency
-  (`playwright-core`). Takes a few seconds, once.
+  (`playwright-core`). Takes a few seconds, once. The same hook keeps the plugin
+  up to date automatically (see **Updates** below).
 - **Google Chrome or Chromium** — to render with. The engine auto-detects Google Chrome or a
   cached Playwright Chromium. If you have neither: `npx playwright install chromium`.
 - **Access** — this repo is public, so the two commands above work for anyone. No GitHub
@@ -117,9 +118,11 @@ claude plugin list        # brand-studio@hourglass → enabled, no errors
 claude --plugin-dir /path/to/brand-studio
 ```
 
-**Update** to the latest after changes are pushed:
+**Updates are automatic.** A `SessionStart` hook quietly refreshes the plugin in the
+background (at most once every 6 hours); new versions apply the next time you start a
+session. To force it right now:
 ```bash
-claude plugin update brand-studio@hourglass
+claude plugin marketplace update hourglass && claude plugin update brand-studio@hourglass
 ```
 </details>
 

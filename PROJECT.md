@@ -100,6 +100,24 @@ through): `brand-add` → **`create-brand`**, `create` → **`create-asset`**, p
   on a temp brand, badge confirmed at pixel level on light and dark backgrounds.
   Engine tests 29/29, run repeatedly after a byte-comparison flake was removed.
 
+## Update — 2026-08-12 (automatic plugin updates for installed users)
+
+- **Removed the `version` field from `plugin.json`** (was pinned at 0.4.0). Claude Code
+  resolves a plugin's version from `plugin.json` → marketplace entry → git commit SHA;
+  a pinned string means users only update when it's bumped, and 0.4.0 had gone stale.
+  With no version anywhere, every pushed commit is a new version. Never re-add it.
+- **The `SessionStart` hook now self-updates the plugin**: `engine/setup.sh` runs
+  `claude plugin marketplace update hourglass` + `claude plugin update brand-studio@hourglass`
+  in a detached background process, throttled to once per 6 hours via a stamp file at
+  `~/.brand-studio/.update-stamp`. Silent (hook stdout is session context), non-blocking,
+  no-op when `claude` isn't on PATH, and safe under a corrupt stamp. Updates apply on the
+  user's next session, matching Claude Code's own auto-update semantics.
+- Why a hook and not native auto-update: for third-party marketplaces auto-update is off
+  by default and there is no CLI flag or user-settings field to enable it non-interactively
+  (only managed/enterprise settings `extraKnownMarketplaces.autoUpdate`); the hook is the
+  only zero-user-action path we control. Verified against current plugin docs and the
+  installed CLI's `--help` on 2026-08-12.
+
 ## Update — 2026-08-07 (website-link brand intake)
 
 - `/create-brand` intake question now offers **`Website link`**: the skill asks for the
