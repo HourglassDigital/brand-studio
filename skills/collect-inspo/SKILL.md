@@ -19,7 +19,7 @@ averages them into mush and we can't render from a screenshot anyway. Do the ana
 **Drive this with questions.** Use `AskUserQuestion` for the directed choices below so the
 user is walked through it. Skip a question when the prompt already answers it.
 
-`ENGINE="${CLAUDE_PLUGIN_ROOT}/engine"`.
+`ENGINE="${CLAUDE_PLUGIN_ROOT}/engine"`. (In Claude Code, `CLAUDE_PLUGIN_ROOT` is set automatically. Running outside Claude Code — e.g. as a Codex skill — the variable is unset: use the repo root that contains this skill instead, i.e. the folder two levels up from this SKILL.md, so `ENGINE=<repo-root>/engine`. If `engine/node_modules` is missing there, run `npm install` in `engine/` once first.)
 
 ## Steps
 

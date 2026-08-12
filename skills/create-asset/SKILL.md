@@ -9,7 +9,7 @@ Turn a topic, tweet, paragraph or idea into a finished on-brand graphic. The cop
 
 **Drive this with questions.** Use `AskUserQuestion` for the directed choices below so the user is walked through it. Skip a question when the prompt already answers it (e.g. they said "an Instagram story about X" → shape is `ig-story`, topic is X).
 
-`ENGINE="${CLAUDE_PLUGIN_ROOT}/engine"` — run all commands with that path.
+`ENGINE="${CLAUDE_PLUGIN_ROOT}/engine"` — run all commands with that path. (In Claude Code, `CLAUDE_PLUGIN_ROOT` is set automatically. Running outside Claude Code — e.g. as a Codex skill — the variable is unset: use the repo root that contains this skill instead, i.e. the folder two levels up from this SKILL.md, so `ENGINE=<repo-root>/engine`. If `engine/node_modules` is missing there, run `npm install` in `engine/` once first.)
 
 ## Steps
 
@@ -51,6 +51,7 @@ Turn a topic, tweet, paragraph or idea into a finished on-brand graphic. The cop
    - Drop in brand assets with placeholders: `{{logo}}` (the lockup as authored), `{{logo-light}}` (white, for dark backgrounds), `{{handle}}`, `{{cta}}`, `{{name}}`.
    - **Reach for `{{logo}}` first.** `{{logo-light}}` recolours the mark to a single flat colour, which only works for a logo that is already one colour. A lockup that paints several fills (a coloured field with knocked-out letters, a ring around a body) would flatten to a solid silhouette, so the engine refuses it and tells you so. Many such lockups carry their own background and read fine on dark and light alike: use `{{logo}}` and check the render.
    - The root element is `#frame` at the shape's size; your `body` fills it. Match `houseStyle` (cards, accent usage, type hierarchy, motifs, doNots), consistent with the examples. A prompt can explicitly ask to break from the house style for a one-off.
+   - Never set an opaque `background` on `#frame`: the engine already paints this brand's background behind your markup (its `bg` colour, plus the faint grid for kits that opt in via `background.grid: true`; the grid is per-brand and off by default). An opaque frame background silently covers whatever this brand's background is. Leave the frame transparent unless the prompt explicitly wants a different background.
    - The engine pins a small `Powered by Hourglass AI` pill (deep teal on light frosted glass, softly glowing) centred at the very bottom of every render (between the frame edge and the safe area). Keep that bottom-centre strip clear: content that strays under it fails the legibility gate as covered text. Don't author your own attribution, and don't try to remove it.
    - Write the object to a temp file, e.g. `/tmp/asset.json`.
 
