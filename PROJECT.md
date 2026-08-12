@@ -118,6 +118,20 @@ through): `brand-add` → **`create-brand`**, `create` → **`create-asset`**, p
   only zero-user-action path we control. Verified against current plugin docs and the
   installed CLI's `--help` on 2026-08-12.
 
+## Update - 2026-08-12 (chart rebranding skill)
+
+- Added `/rebrand-chart` for re-skinning an existing chart image into any saved brand with
+  the same data. The skill resolves brands through the normal private brand flow, blocks
+  rendering on uncertain extracted values until the user confirms them, renders through
+  `chart-engine/cli.mjs`, critiques through the rubric plus optional cross-model critic,
+  and writes a trail for each round.
+- Added `scripts/cross-critic.mjs` as the generic OpenAI vision critic used by the chart
+  QA loop. Missing `OPENAI_API_KEY` is degraded mode, not a hard failure.
+- Extended the existing `SessionStart` setup path to install `chart-engine/` dependencies
+  when that renderer is present, matching the `engine/` install pattern. The renderer
+  itself lives in `chart-engine/`, ported from the chart-spec engine and generalised to
+  any saved brand (design: `docs/superpowers/specs/2026-08-12-rebrand-chart-design.md`).
+
 ## Update — 2026-08-07 (website-link brand intake)
 
 - `/create-brand` intake question now offers **`Website link`**: the skill asks for the
