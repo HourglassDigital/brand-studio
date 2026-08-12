@@ -19,6 +19,7 @@ Onboard a brand into a saved **brand kit** that every future asset is generated 
 
    **If they chose `Website link`:** ask for the URL, then mine the live site:
    - Fetch the page HTML and its linked CSS (WebFetch or `curl`). Extract the palette (hex/rgb values actually used for backgrounds, text and accents), the font families (`@font-face` and `font-family` declarations; note Google Fonts links), and the logo (`<img>`/inline SVG in the header, or the og:image / favicon as a fallback). Download the logo and any self-hosted font files into `assets/`.
+   - On modern JS-heavy sites (Next.js etc.) the design tokens often never appear in the static CSS, so if the fetch yields few or no usable colours/fonts, don't guess from fragments: load the page headlessly (the engine's `playwright-core` is available) and read `getComputedStyle` off the rendered `body`/`h1` for the real background, text colour and font family, and check `<link rel=preload as=font>` in the HTML head for self-hosted font file URLs. The rendered screenshot is the ground truth for the accent palette; sample from it, and say so honestly if something couldn't be determined.
    - Screenshot the homepage as a visual reference into `examples/` so analysis can ground on how the site actually looks, not just its raw tokens:
      ```bash
      node "$ENGINE/snap.mjs" <url> "<examples>/website.png"        # add --full for the whole page
