@@ -32,3 +32,10 @@ brands/
 
 # Screenshots for the README live here and are safe to publish.
 !docs/**
+
+# Synthetic chart-engine test data is safe to publish and CI needs it: the
+# _template kit is fontless and invented, the goldens are machine renders of
+# fake numbers. Real brand kits stay excluded by the rules above.
+!chart-engine/test/brands/
+!chart-engine/test/brands/**
+!chart-engine/test/golden/*.png
