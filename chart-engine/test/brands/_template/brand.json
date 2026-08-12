@@ -1,0 +1,16 @@
+{
+  "slug": "_template", "name": "Template Brand", "aliases": ["template"],
+  "colors": {
+    "bg": "#FFFFFF", "ink": "#1A1A2E", "muted": "#6B7280",
+    "accent": "#E4572E", "accentSoft": "#FBE4DC", "accent2": "#2E86AB",
+    "purple": "#B19EF8", "line": "#E5E7EB", "white": "#FFFFFF"
+  },
+  "fonts": { "headlineFamily": "system-ui", "bodyFamily": "system-ui", "files": [] },
+  "chart": {
+    "cornerRadius": 8, "borderWidth": 2, "gridStyle": "plain",
+    "hues": ["accent2", "accent", "purple"],
+    "series": ["accent2", "accent"],
+    "pie": { "ramp": ["accent2", "accentSoft", "accent"] },
+    "defaultSize": { "width": 1600, "height": 1100 }
+  }
+}

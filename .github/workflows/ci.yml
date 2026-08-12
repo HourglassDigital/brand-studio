@@ -8,16 +8,20 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [engine, chart-engine]
     defaults:
       run:
-        working-directory: engine
+        working-directory: ${{ matrix.package }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: engine/package-lock.json
+          cache-dependency-path: ${{ matrix.package }}/package-lock.json
       - run: npm ci
       # The render tests need a Chromium; resolveExecutable() finds the
       # runner's preinstalled Google Chrome at /usr/bin/google-chrome.

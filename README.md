@@ -10,6 +10,7 @@ numbers are never garbled (the thing image generators get wrong).
 /create-brand                                       → learn a brand from its assets
 /collect-inspo                                      → teach the brand its taste from references it admires
 /create-asset                                       → on-brand PNG, at any social shape
+/rebrand-chart                                      → re-skin a chart image with the same data
 /edit-brand                                         → change a saved brand's palette/font/voice/...
 ```
 
@@ -35,6 +36,8 @@ model would garble them.
 assets ──▶ /create-brand   analyse look + voice → a saved brand kit (brand.json + assets + examples)
 prompt ──▶ /create-asset   write the copy in the brand's voice, author the visual in the
                            brand's house style, render real HTML/CSS → pixel-perfect PNG (+ PDF)
+chart ───▶ /rebrand-chart  extract and confirm the chart data, validate a deterministic
+                           chart-spec, render it in the brand → PNG (+ PDF)
 ```
 
 Three ideas make it work:
@@ -61,7 +64,8 @@ claude plugin install brand-studio@hourglass
 ```
 
 Then **start a new Claude Code session** (plugins load when a session starts) and type `/` —
-you'll see `/create-brand`, `/collect-inspo`, `/create-asset`, `/edit-brand`.
+you'll see `/create-brand`, `/collect-inspo`, `/create-asset`, `/rebrand-chart`,
+`/edit-brand`.
 
 **Option B. Starting from scratch?** Open Terminal and paste this:
 
@@ -133,6 +137,7 @@ claude plugin marketplace update hourglass && claude plugin update brand-studio@
 | `/create-brand` | Learn a brand from 1-3 example graphics + logo + fonts; saves a brand kit (palette, fonts, logo, voice, house-style spec). Walks you through it with questions. |
 | `/collect-inspo` | Teach a saved brand its *taste* by feeding in references it admires (URLs, screenshots, a Notion swipe file, named accounts). Distils them into archetypes + visual grammar + dos/don'ts and saves it as `inspiration.json`. Re-run to add more, additively. |
 | `/create-asset <topic>` | Write on-brand copy + author the visual in the brand's house style, structured around the closest-fit inspiration archetype + render the PNG, at a chosen/inferred shape. Runs an edit loop and can save your preferences. (Add "as a PDF" for an editable Canva import.) |
+| `/rebrand-chart` | Drop in a chart screenshot/export and get the same data re-rendered in a saved brand, optionally stamped with that brand's own mark (handle/name + logo icon). It confirms uncertain values before rendering, critiques the output, and can export PNG/PDF plus a trail of what changed. |
 | `/edit-brand` | Deliberately change a saved brand's kit (palette, fonts, logo, voice, house-style, handle/CTA), then re-render a test so you see the effect. |
 
 ## Shapes
@@ -174,6 +179,10 @@ The engine is deliberately thin. It takes a brand kit + a shape + an asset's
 (`--bg --ink --accent ...`) and logo (`{{logo}}` placeholder), sizes the canvas to the
 shape, and screenshots it to PNG/PDF. It imposes no look of its own, with one deliberate
 exception: every render carries a small "Powered by Hourglass AI" mark at the bottom.
+
+`chart-engine/` is the matching thin renderer for `/rebrand-chart`: brand kit +
+validated chart-spec → deterministic SVG → PNG/PDF. It uses the same private brand data
+dir and the same attribution mark.
 
 ## Ships with
 

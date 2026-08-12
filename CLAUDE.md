@@ -2,8 +2,9 @@
 
 A Claude Code plugin that brands install, upload their assets to, and which learns their
 look into a per-client **brand repository**. After that, a prompt plus a target **shape**
-generates a new on-brand asset (social post, etc.), rendered from real HTML/CSS so the
-brand match is exact and text/numbers are never garbled.
+generates a new on-brand asset (social post, etc.), or a source chart can be re-skinned
+into the same brand with its data unchanged. Outputs are rendered from real HTML/CSS or a
+deterministic chart spec, so the brand match is exact and text/numbers are never garbled.
 
 > This file is the source of truth for how the project is built. Read it before editing.
 > Status, open tasks and the rebuild plan live in `PROJECT.md`.
@@ -105,9 +106,15 @@ defaulted. A prompt may override the shape explicitly.
 
 ## Engine contract (keep it thin)
 
-The engine does four jobs and no design:
+There are now two renderers, both deliberately look-neutral except for the attribution pill:
+`engine/` renders Claude-authored social assets from `{css, body}` + shape, while
+`chart-engine/` renders charts from deterministic chart-spec → SVG → PNG/PDF.
+
+The engines do these jobs and no design:
 - **render** — HTML + brand + shape → PNG/PDF (Playwright/Chromium). Injects brand fonts,
   logo, and palette CSS variables; sizes the canvas to the shape; honours the safe area.
+- **chart render** — brand + chart-spec → SVG → PNG/PDF. The chart path is deterministic:
+  the same validated spec and brand kit produce the same chart structure and text.
 - **brandctl** — manage brand repos: add, list, active/use, path, validate, inspiration;
   manage assets, the preferences layer and the inspiration layer.
 - **shapes** — list and resolve the built-in canvas presets.
@@ -136,6 +143,7 @@ installed users from receiving updates.
 | `/create-brand` | Walk the user (via AskUserQuestion) through onboarding: upload assets (examples, logo, fonts) and/or give a website link (palette, fonts and logo are mined from the live site, and the homepage is screenshotted as a reference) → analyse → build the brand kit, capturing the house-style spec carefully. |
 | `/collect-inspo` | Teach a saved brand its taste: ingest URLs / files / a Notion swipe file / named accounts, then distil into archetypes + visual grammar + dos/don'ts saved as `inspiration.json`. Additive: re-run to extend. |
 | `/create-asset` | Generate an on-brand asset: ask brand/shape/post-type → compose copy + author `{css, body}` (around the closest-fit inspiration archetype when one exists) → render → adversarial self-review → edit loop → offer to save preferences. |
+| `/rebrand-chart` | Re-skin a source chart image into the chosen saved brand: extract and confirm the same data → optional brand mark (the brand's handle/name, plus its `logo.icon` when declared) → validate a chart-spec → render deterministic PNG/PDF → critique and edit through the spec only → offer to save chart preferences. |
 | `/edit-brand` | Deliberately change a saved brand's base kit (palette, fonts, logo, voice, house style, handle/CTA) and re-render a test. |
 
 Each skill is question-driven (AskUserQuestion) so the user is directed through the flow.
@@ -181,9 +189,17 @@ engine/                thin renderer + brandctl + shapes (ES modules)
   shapes.mjs           built-in canvas presets
   store.mjs            data-dir resolution + base ⊕ preferences + inspiration attach
   test/smoke.test.mjs  shapes, merge, inspiration, render
+chart-engine/          deterministic chart renderer (brand + chart-spec → SVG → PNG/PDF)
+  cli.mjs              commands: render | validate | doctor | brands
+  spec.mjs             chart-spec validation
+  brand-adapter.mjs    maps brand-studio kits onto chart rendering tokens
+  render/              chart-specific SVG rendering and Playwright capture
+scripts/
+  cross-critic.mjs     optional OpenAI vision critic for chart QA (exit 2 = degraded)
 skills/
   create-brand/        onboard a brand from its assets (question-driven)
   collect-inspo/       ingest references the brand admires; distil taste signals
   create-asset/        generate an asset → edit loop → save preferences
+  rebrand-chart/       re-skin a source chart → edit loop → save chart preferences
   edit-brand/          deliberately change a saved brand's kit
 ```

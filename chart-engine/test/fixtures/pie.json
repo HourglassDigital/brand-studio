@@ -1,0 +1,5 @@
+{ "type": "pie", "title": "Mix", "legendValue": "percent",
+  "series": [{ "name": "share", "values": [
+    { "x": "Alpha", "y": 40 }, { "x": "Beta", "y": 25 }, { "x": "Gamma", "y": 20 },
+    { "x": "Delta", "y": 10 }, { "x": "Epsilon", "y": 5 } ] }],
+  "size": { "width": 900, "height": 600 } }

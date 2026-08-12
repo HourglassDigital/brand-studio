@@ -26,27 +26,36 @@ export function resolveExecutable() {
   const caches = [
     path.join(os.homedir(), "Library/Caches/ms-playwright"), // macOS
     path.join(os.homedir(), ".cache/ms-playwright"), // linux
+    path.join(os.homedir(), "AppData/Local/ms-playwright"), // windows
   ];
-  const candidates = [];
+  const headlessCandidates = [];
+  const appCandidates = [];
   for (const cache of caches) {
     if (!fs.existsSync(cache)) continue;
-    for (const dir of fs.readdirSync(cache)) {
-      candidates.push(
+    for (const dir of fs.readdirSync(cache).sort()) {
+      headlessCandidates.push(
         path.join(cache, dir, "chrome-headless-shell-mac-arm64/chrome-headless-shell"),
         path.join(cache, dir, "chrome-headless-shell-mac-x64/chrome-headless-shell"),
         path.join(cache, dir, "chrome-headless-shell-linux64/chrome-headless-shell"),
+        path.join(cache, dir, "chrome-headless-shell-win64/chrome-headless-shell.exe"),
+        path.join(cache, dir, "chrome-mac/headless_shell"),
+      );
+      appCandidates.push(
         path.join(cache, dir, "chrome-mac/Chromium.app/Contents/MacOS/Chromium"),
         path.join(cache, dir, "chrome-linux/chrome"),
+        path.join(cache, dir, "chrome-win/chrome.exe"),
       );
     }
   }
-  candidates.push(
+  const candidates = [
+    ...headlessCandidates,
+    ...appCandidates,
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "/Applications/Chromium.app/Contents/MacOS/Chromium",
     "/usr/bin/google-chrome",
     "/usr/bin/chromium",
     "/usr/bin/chromium-browser",
-  );
+  ];
   const found = candidates.find((p) => fs.existsSync(p));
   if (!found) {
     throw new Error(
@@ -56,8 +65,18 @@ export function resolveExecutable() {
   return found;
 }
 
+// macOS headless shell refuses to fork under seatbelt-sandboxed shells (the
+// default for Claude Code sessions, where this plugin's renders actually run);
+// --single-process keeps first-run renders working there. Full Chrome/Chromium
+// launches its own way and never gets the flag.
+function launchArgs(executablePath) {
+  if (process.platform === "darwin" && /headless[_-]shell/.test(executablePath)) return ["--single-process"];
+  return [];
+}
+
 async function withPage(size, fn, { scale } = {}) {
-  const browser = await chromium.launch({ executablePath: resolveExecutable(), headless: true });
+  const executablePath = resolveExecutable();
+  const browser = await chromium.launch({ executablePath, headless: true, args: launchArgs(executablePath) });
   try {
     const page = await browser.newPage({
       viewport: { width: size.width, height: size.height },

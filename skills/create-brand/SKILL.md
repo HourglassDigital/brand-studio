@@ -74,7 +74,7 @@ Onboard a brand into a saved **brand kit** that every future asset is generated 
      "background": { "grid": false }
    }
    ```
-   Notes: omit `logo.file` to use a generated wordmark (set `logo.text` to override the name). Omit `fonts.files` for a Google font by name. Set `background.grid:true` only if the brand genuinely uses a grid. Any colour omitted falls back to a default.
+   Notes: omit `logo.file` to use a generated wordmark (set `logo.text` to override the name). If the brand has a mark-only icon (an SVG with no `<text>` elements), save it too and declare it as `logo.icon`: it unlocks the icon in `/rebrand-chart`'s brand mark and `{{logo-icon}}` in assets. Never point `icon` at the full wordmark. Omit `fonts.files` for a Google font by name. Set `background.grid:true` only if the brand genuinely uses a grid. Any colour omitted falls back to a default.
 
 7. **Validate and activate:**
    ```bash
