@@ -122,7 +122,12 @@ The engine does four jobs and no design:
   that bottom-centre strip clear or the legibility gate flags the collision.
 
 Chromium is auto-detected (Google Chrome or a cached Playwright Chromium); a `SessionStart`
-hook installs the Node dependency on first run.
+hook installs the Node dependency on first run and self-updates the installed plugin in the
+background (marketplace refresh + plugin update, throttled to once per 6 hours, applied on
+the next session). `plugin.json` deliberately carries **no `version` field**: Claude Code
+then falls back to the git commit SHA for update detection, so every pushed commit is seen
+as a new version. Do not add a `version` back; a stale pinned version silently stops all
+installed users from receiving updates.
 
 ## Skills (MVP)
 
