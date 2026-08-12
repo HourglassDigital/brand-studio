@@ -131,6 +131,11 @@ through): `brand-add` → **`create-brand`**, `create` → **`create-asset`**, p
   when that renderer is present, matching the `engine/` install pattern. The renderer
   itself lives in `chart-engine/`, ported from the chart-spec engine and generalised to
   any saved brand (design: `docs/superpowers/specs/2026-08-12-rebrand-chart-design.md`).
+- Charts can optionally carry the client's own brand mark: the skill offers it, sets
+  `spec.watermark` (handle, else name), and the engine inlines the kit's `logo.icon`
+  before the text when one is declared (`chart-engine/test/scaffold.test.mjs` pins the
+  behaviour). The "Powered by Hourglass AI" pill was confirmed already present on both
+  renderers' output; no change was needed for posts.
 
 ## Update — 2026-08-07 (website-link brand intake)
 

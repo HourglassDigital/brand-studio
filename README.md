@@ -137,7 +137,7 @@ claude plugin marketplace update hourglass && claude plugin update brand-studio@
 | `/create-brand` | Learn a brand from 1-3 example graphics + logo + fonts; saves a brand kit (palette, fonts, logo, voice, house-style spec). Walks you through it with questions. |
 | `/collect-inspo` | Teach a saved brand its *taste* by feeding in references it admires (URLs, screenshots, a Notion swipe file, named accounts). Distils them into archetypes + visual grammar + dos/don'ts and saves it as `inspiration.json`. Re-run to add more, additively. |
 | `/create-asset <topic>` | Write on-brand copy + author the visual in the brand's house style, structured around the closest-fit inspiration archetype + render the PNG, at a chosen/inferred shape. Runs an edit loop and can save your preferences. (Add "as a PDF" for an editable Canva import.) |
-| `/rebrand-chart` | Drop in a chart screenshot/export and get the same data re-rendered in a saved brand. It confirms uncertain values before rendering, critiques the output, and can export PNG/PDF plus a trail of what changed. |
+| `/rebrand-chart` | Drop in a chart screenshot/export and get the same data re-rendered in a saved brand, optionally stamped with that brand's own mark (handle/name + logo icon). It confirms uncertain values before rendering, critiques the output, and can export PNG/PDF plus a trail of what changed. |
 | `/edit-brand` | Deliberately change a saved brand's kit (palette, fonts, logo, voice, house-style, handle/CTA), then re-render a test so you see the effect. |
 
 ## Shapes

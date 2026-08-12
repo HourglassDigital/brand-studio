@@ -113,6 +113,19 @@ this repo.
    ```json
    { "confirmedByUser": true }
    ```
+   **Brand mark (optional client branding).** Ask with `AskUserQuestion` (header
+   `Brand mark`): `Yes, mark it as ours` / `No mark`. Default to the brand's saved
+   `preferences.rebrandChart.brandMark` when present and skip the question. If yes, set:
+   ```json
+   { "watermark": "<the brand's handle if set, else its name>" }
+   ```
+   The engine draws the mark bottom-left; when the kit declares an icon-only logo
+   (`logo.icon` in `brand.json`), the icon is inlined before the text automatically. If
+   the user wanted their logo on the chart but the kit has no `logo.icon`, say the mark
+   will be text-only for now and name `/edit-brand` as the way to add an icon variant
+   (an icon-only SVG with no `<text>` elements). Never point `logo.icon` at the full
+   wordmark: the engine inlines it before the name and the brand would read twice.
+
    Validate before rendering:
    ```bash
    node "$CHART_ENGINE/cli.mjs" validate --spec work/spec.json
@@ -171,9 +184,14 @@ this repo.
     ```
     Then ask with `AskUserQuestion` (header `Save?`): `Yes, remember these tweaks` /
     `No, one-off`. If yes, additionally write the durable preferences the user confirmed,
-    e.g.:
+    including their brand-mark choice so future rebrands stop asking, e.g.:
     ```json
-    { "rebrandChart": { "notes": "Prefers direct value labels and compact source notes." } }
+    {
+      "rebrandChart": {
+        "brandMark": true,
+        "notes": "Prefers direct value labels and compact source notes."
+      }
+    }
     ```
     Do not mutate `brand.json`; deliberate base-kit changes go through `/edit-brand`.
 
