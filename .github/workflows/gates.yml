@@ -1,0 +1,88 @@
+name: Floor gates
+
+# Self-contained floor gates for this public repo: one job per floor gate in
+# evals.config.json, each running the gate's `run` (must pass) and then its
+# `must_fail` (must fail, proving the gate can go red), plus a verdict job that
+# fails when any gate job did not succeed. GitHub-hosted runners only: free for
+# a public repository. The render tests use the runner's preinstalled Google
+# Chrome at /usr/bin/google-chrome; the gate fails if any test skips.
+# This replaces the old ci.yml, which ran the same `npm test` in each package.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  engine-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GATE: engine-tests
+      PKG: engine
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: engine/package-lock.json
+      - run: npm ci --no-audit --no-fund
+        working-directory: ${{ env.PKG }}
+      - name: Run the gate (must pass)
+        run: |
+          cmd=$(jq -er --arg g "$GATE" '.gates[] | select(.name == $g and .suite == "floor") | .run' evals.config.json)
+          echo "+ $cmd"; bash -c "$cmd"
+      - name: Run the gate's must_fail (must fail)
+        run: |
+          cmd=$(jq -er --arg g "$GATE" '.gates[] | select(.name == $g and .suite == "floor") | .must_fail' evals.config.json)
+          echo "+ $cmd"
+          if bash -c "$cmd"; then echo "::error::must_fail of $GATE passed: the gate cannot fail"; exit 1; fi
+          echo "must_fail of $GATE failed as required"
+
+  chart-engine-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GATE: chart-engine-tests
+      PKG: chart-engine
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: chart-engine/package-lock.json
+      - run: npm ci --no-audit --no-fund
+        working-directory: ${{ env.PKG }}
+      - name: Run the gate (must pass)
+        run: |
+          cmd=$(jq -er --arg g "$GATE" '.gates[] | select(.name == $g and .suite == "floor") | .run' evals.config.json)
+          echo "+ $cmd"; bash -c "$cmd"
+      - name: Run the gate's must_fail (must fail)
+        run: |
+          cmd=$(jq -er --arg g "$GATE" '.gates[] | select(.name == $g and .suite == "floor") | .must_fail' evals.config.json)
+          echo "+ $cmd"
+          if bash -c "$cmd"; then echo "::error::must_fail of $GATE passed: the gate cannot fail"; exit 1; fi
+          echo "must_fail of $GATE failed as required"
+
+  floor-verdict:
+    if: always()
+    needs: [engine-tests, chart-engine-tests]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Every floor gate in evals.config.json has a job, and every job succeeded
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          missing=$(jq -r '.gates[] | select(.suite == "floor") | .name' evals.config.json | while read -r g; do
+            echo "$RESULTS" | jq -e --arg g "$g" 'has($g)' >/dev/null || echo "$g"; done)
+          [ -z "$missing" ] || { echo "::error::floor gates with no job in gates.yml: $missing"; exit 1; }
+          echo "$RESULTS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          echo "$RESULTS" | jq -e 'all(.[]; .result == "success")' >/dev/null || { echo "::error::a floor gate failed"; exit 1; }
+          echo "all floor gates passed"

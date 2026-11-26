@@ -196,6 +196,8 @@ chart-engine/          deterministic chart renderer (brand + chart-spec → SVG 
   render/              chart-specific SVG rendering and Playwright capture
 scripts/
   cross-critic.mjs     optional OpenAI vision critic for chart QA (exit 2 = degraded)
+  floor-gate.sh        floor gate: one package's npm test, red on any failure, skip or missing tests
+evals.config.json      floor gates (run + must_fail per package), run by .github/workflows/gates.yml
 skills/
   create-brand/        onboard a brand from its assets (question-driven)
   collect-inspo/       ingest references the brand admires; distil taste signals
