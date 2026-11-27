@@ -31,7 +31,14 @@ jobs:
           cache: npm
           cache-dependency-path: engine/package-lock.json
       - name: Print toolchain (Ghostscript, poppler) for the print-PDF tests
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq ghostscript poppler-utils
+        # A third-party repo on the runner image (packages.microsoft.com) can fail
+        # `apt-get update` with a 403 while the Ubuntu lists still refresh, so the
+        # update's exit code is not the check: the install is, and the gs/pdfinfo
+        # version lines prove the tools are there before any test runs.
+        run: |
+          sudo apt-get update -qq || echo "::warning::apt-get update reported an error; installing from the lists that did refresh"
+          sudo apt-get install -y -qq ghostscript poppler-utils
+          gs --version && pdfinfo -v
       - run: npm ci --no-audit --no-fund
         working-directory: ${{ env.PKG }}
       - name: Run the gate (must pass)
