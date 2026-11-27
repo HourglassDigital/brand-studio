@@ -265,7 +265,10 @@ export function makeBrand(profile = {}, { assetsDir } = {}) {
       html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }`
       : `.frame { width: ${width}px; height: ${height}px; }`;
     const frames = bodies
-      .map((b, i) => `<div class="frame"${i === 0 ? ' id="frame"' : ""} data-page="${i + 1}">${b}${pill}</div>`)
+      // Every side carries id="frame": #frame is the authoring contract for the asset root,
+      // so the back must get the same root styles as the front. Duplicate ids are
+      // deliberate here; nothing queries them in the multi-page print document.
+      .map((b, i) => `<div class="frame" id="frame" data-page="${i + 1}">${b}${pill}</div>`)
       .join("");
     return `<!doctype html><html><head><meta charset="utf-8">${fontLink()}
     <style>${baseCss()}${css || ""}

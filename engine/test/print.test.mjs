@@ -51,6 +51,7 @@ test("print document: one frame per side, physical @page size, and no attributio
   const html = brand.htmlDoc({ width: shape.width, height: shape.height, css: "", body: ["<p>front</p>", "<p>back</p>"], print: shape.mm });
   assert.equal((html.match(/class="frame"/g) || []).length, 2);
   assert.match(html, /@page \{ size: 100mm 65mm; margin: 0; \}/);
+  assert.equal((html.match(/id="frame"/g) || []).length, 2, "the back gets the #frame root styles too");
   assert.doesNotMatch(html, /<div class="bs-attribution">/, "a physical card must not carry the pill");
   // The screen path keeps its pill, and refuses a multi-page body.
   const screen = brand.htmlDoc({ width: 1080, height: 1080, css: "", body: "<p>x</p>" });
@@ -152,7 +153,11 @@ test("print PDF: exact 100 x 65 mm pages, trim box 5 mm in, fonts embedded, CMYK
   // Every font is embedded (pdffonts "emb" column).
   const fonts = execFileSync("pdffonts", [r.out], { encoding: "utf8" }).trim().split("\n").slice(2);
   assert.ok(fonts.length > 0, "the text is real text, so fonts are present");
-  for (const line of fonts) assert.match(line, /\byes\b/, `font not embedded: ${line}`);
+  // Columns from the right: emb sub uni object ID (two tokens). Read emb itself, not any "yes".
+  for (const line of fonts) {
+    const cols = line.trim().split(/\s+/);
+    assert.equal(cols[cols.length - 5], "yes", `font not embedded (emb column): ${line}`);
+  }
   // CMYK: every colour the pages paint is a CMYK operator. The control proves the
   // check can fail: the same card without --cmyk paints with RGB operators.
   const ops = colourOps(r.out);
@@ -194,4 +199,23 @@ test("logo plumbing sizes only the outer svg of a lockup, so a nested mark svg k
   const css = brand.baseCss();
   assert.match(css, /\.bs-logo > svg \{ height: var\(--logo-h, auto\); width: auto; overflow: visible; \}/);
   assert.doesNotMatch(css, /\.bs-logo svg \{/, "a descendant selector would also resize a nested <svg> mark");
+});
+
+test("print CLI: the audit sees print-only CSS and text left in the bleed (skips without Chromium)", async (t) => {
+  if (!have(resolveExecutable)) return t.skip("needs Chromium");
+  const dataDir = tempBrand();
+  // 8 pt on screen, 4 pt in print: the PDF would print 4 pt, so the gate must refuse it.
+  const tiny = runCli(dataDir, {
+    css: ".s{position:absolute;inset:var(--trim-safe);font-size:8pt} @media print{.s{font-size:4pt}}",
+    pages: { front: '<div class="s">Small in print</div>' },
+  });
+  assert.notEqual(tiny.status, 0, "print-only tiny text must fail the gate");
+  assert.match(tiny.stderr, /tiny/);
+  // Text inside the frame but out in the 5 mm bleed is cut off the card.
+  const bleed = runCli(dataDir, {
+    css: ".s{position:absolute;left:0;top:30%;font-size:9pt}",
+    pages: { front: '<div class="s">In the bleed</div>' },
+  }, ["--bleed", "5"]);
+  assert.notEqual(bleed.status, 0, "text in the bleed must fail the clip check");
+  assert.match(bleed.stderr, /clipped/);
 });

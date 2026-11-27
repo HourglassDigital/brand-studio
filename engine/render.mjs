@@ -106,16 +106,19 @@ export async function auditHtml(html, size, { scale = 2, ...opts } = {}) {
 
 // `inset` (CSS px) crops that much off every edge of the screenshot: a print preview
 // crops the bleed away so the PNG shows the card as it will be cut.
-export async function renderHtmlToFile(html, size, outPath, { scale = 2, audit = true, auditOptions = {}, inset = 0 } = {}) {
+// `media: "print"` lays the page out with print CSS, so a print preview (and its
+// legibility audit) measures the same layout the print PDF will carry.
+export async function renderHtmlToFile(html, size, outPath, { scale = 2, audit = true, auditOptions = {}, inset = 0, media = null } = {}) {
   const { buf, findings } = await withPage(
     size,
     async (page) => {
+      if (media) await page.emulateMedia({ media });
       await page.setContent(html, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
       const frameSelector = (await page.$("#frame")) ? "#frame" : "body";
       // Measure BEFORE the screenshot, on the same loaded page: same layout, no second render.
       const found = audit
-        ? await page.evaluate(auditInPage, { ...DEFAULTS, ...auditOptions, frameSelector })
+        ? await page.evaluate(auditInPage, { ...DEFAULTS, ...auditOptions, frameSelector, inset })
         : [];
       const el = (await page.$(frameSelector)) || (await page.$("body"));
       if (!inset) return { buf: await el.screenshot({ type: "png" }), findings: found };

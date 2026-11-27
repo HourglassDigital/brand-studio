@@ -155,6 +155,7 @@ try {
         audit: !args["no-audit"],
         auditOptions: { minFontSize: PRINT_MIN_FONT_PX },
         inset: shape.bleed * (96 / 25.4),
+        media: "print",
       });
       pngs.push(png);
     }
