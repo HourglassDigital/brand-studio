@@ -35,11 +35,15 @@ export function auditInPage(opts) {
     minContrast,
     ignoreSelector,
     frameSelector,
+    inset = 0, // CSS px cropped off every edge of the output (a print preview's bleed)
   } = opts;
 
   const findings = [];
   const frame = document.querySelector(frameSelector) || document.body;
-  const frameRect = frame.getBoundingClientRect();
+  // The bounds text must stay inside: the frame, less any inset the output crops away
+  // (a print preview drops the bleed, so text in the bleed would vanish from the card).
+  const fr = frame.getBoundingClientRect();
+  const frameRect = { left: fr.left + inset, top: fr.top + inset, right: fr.right - inset, bottom: fr.bottom - inset };
 
   // ---- colour helpers -------------------------------------------------------
   const parseColor = (c) => {
