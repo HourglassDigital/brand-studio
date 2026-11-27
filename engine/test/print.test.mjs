@@ -188,3 +188,10 @@ test("print CLI: an unknown side or a {{qr}} without data.qr fails loudly (skips
   assert.notEqual(noPages.status, 0);
   assert.match(noPages.stderr, /needs \\"pages\\"/);
 });
+
+test("logo plumbing sizes only the outer svg of a lockup, so a nested mark svg keeps its own geometry", () => {
+  const brand = makeBrand({ name: "Acme" });
+  const css = brand.baseCss();
+  assert.match(css, /\.bs-logo > svg \{ height: var\(--logo-h, auto\); width: auto; overflow: visible; \}/);
+  assert.doesNotMatch(css, /\.bs-logo svg \{/, "a descendant selector would also resize a nested <svg> mark");
+});

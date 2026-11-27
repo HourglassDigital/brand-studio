@@ -237,7 +237,9 @@ export function makeBrand(profile = {}, { assetsDir } = {}) {
     mark { background: transparent; color: inherit; padding: 0; }
     /* Generic logo plumbing for the logo() helper / {{logo}} placeholder. */
     .bs-logo { display: inline-flex; align-items: center; gap: 10px; }
-    .bs-logo svg { height: var(--logo-h, auto); width: auto; }
+    /* Direct child only: a lockup that nests an <svg> for its mark must keep the inner one as authored.
+       overflow visible: at small print sizes the rounded box otherwise shaves the last glyph. */
+    .bs-logo > svg { height: var(--logo-h, auto); width: auto; overflow: visible; }
     .bs-logo__word {
       font-family: '${headlineFamily}', system-ui, sans-serif;
       font-weight: 700; line-height: 0.98; letter-spacing: -0.01em;
