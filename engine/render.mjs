@@ -4,6 +4,7 @@ import { chromium } from "playwright-core";
 import os from "node:os";
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { auditInPage, formatFindings, DEFAULTS } from "./legibility.mjs";
 
 export class LegibilityError extends Error {
@@ -103,7 +104,9 @@ export async function auditHtml(html, size, { scale = 2, ...opts } = {}) {
   );
 }
 
-export async function renderHtmlToFile(html, size, outPath, { scale = 2, audit = true, auditOptions = {} } = {}) {
+// `inset` (CSS px) crops that much off every edge of the screenshot: a print preview
+// crops the bleed away so the PNG shows the card as it will be cut.
+export async function renderHtmlToFile(html, size, outPath, { scale = 2, audit = true, auditOptions = {}, inset = 0 } = {}) {
   const { buf, findings } = await withPage(
     size,
     async (page) => {
@@ -115,7 +118,10 @@ export async function renderHtmlToFile(html, size, outPath, { scale = 2, audit =
         ? await page.evaluate(auditInPage, { ...DEFAULTS, ...auditOptions, frameSelector })
         : [];
       const el = (await page.$(frameSelector)) || (await page.$("body"));
-      return { buf: await el.screenshot({ type: "png" }), findings: found };
+      if (!inset) return { buf: await el.screenshot({ type: "png" }), findings: found };
+      const box = await el.boundingBox();
+      const clip = { x: box.x + inset, y: box.y + inset, width: box.width - 2 * inset, height: box.height - 2 * inset };
+      return { buf: await page.screenshot({ type: "png", clip }), findings: found };
     },
     { scale },
   );
@@ -142,4 +148,61 @@ export async function renderHtmlToPdf(html, size, outPath) {
     });
   });
   return outPath;
+}
+
+// A print-ready PDF at the piece's physical size (bleed included), one page per side,
+// text kept as real vector text with its fonts embedded.
+//
+// Chromium rounds PDF page sizes (a 100 x 65 mm request comes back about 0.3 mm off,
+// with the art sitting at the bottom-left of a slightly larger page), so every print
+// PDF goes through Ghostscript: pdfwrite fixes the page at the exact size from the
+// bottom-left origin, which is exactly where the art already sits, and stamps
+// TrimBox/BleedBox on every page so a printer's RIP knows where the cut is. With
+// `cmyk` the same pass converts to DeviceCMYK (text and vectors stay as they are).
+// No Ghostscript is a loud error, never a silently wrong-size file.
+export async function renderPrintPdf(html, shape, outPath, { cmyk = false } = {}) {
+  if (!shape.print) throw new Error(`renderPrintPdf needs a print shape; "${shape.name}" is a screen shape.`);
+  const gs = resolveGhostscript();
+  fs.mkdirSync(path.dirname(outPath), { recursive: true });
+  const rawPath = outPath.replace(/\.pdf$/i, "") + ".chromium.pdf";
+  await withPage(shape, async (page) => {
+    await page.setContent(html, { waitUntil: "networkidle" });
+    await page.evaluate(() => document.fonts.ready);
+    await page.pdf({ path: rawPath, width: `${shape.mm.width}mm`, height: `${shape.mm.height}mm`, printBackground: true });
+  });
+  try {
+    const PT = 72 / 25.4;
+    const f = (n) => n.toFixed(3);
+    const w = shape.mm.width * PT;
+    const h = shape.mm.height * PT;
+    const b = shape.bleed * PT;
+    // EndPage runs once per page (reason 0 or 1 = a real page), so the boxes land on every side.
+    const boxes =
+      `<</EndPage {exch pop 2 lt {[/TrimBox [${f(b)} ${f(b)} ${f(w - b)} ${f(h - b)}] ` +
+      `/BleedBox [0 0 ${f(w)} ${f(h)}] /PAGE pdfmark true} {false} ifelse}>> setpagedevice`;
+    execFileSync(gs, [
+      "-dBATCH", "-dNOPAUSE", "-dQUIET", "-dSAFER",
+      "-sDEVICE=pdfwrite", "-dPDFSETTINGS=/prepress", "-dEmbedAllFonts=true", "-dSubsetFonts=true",
+      "-dFIXEDMEDIA", `-dDEVICEWIDTHPOINTS=${f(w)}`, `-dDEVICEHEIGHTPOINTS=${f(h)}`,
+      ...(cmyk ? ["-sColorConversionStrategy=CMYK", "-sProcessColorModel=DeviceCMYK"] : []),
+      `-sOutputFile=${outPath}`,
+      "-c", boxes,
+      "-f", rawPath,
+    ]);
+  } finally {
+    fs.rmSync(rawPath, { force: true });
+  }
+  return outPath;
+}
+
+export function resolveGhostscript() {
+  const candidates = [process.env.BRAND_STUDIO_GS, "/opt/homebrew/bin/gs", "/usr/local/bin/gs", "/usr/bin/gs"];
+  const found = candidates.find((p) => p && fs.existsSync(p));
+  if (!found) {
+    throw new Error(
+      "Print PDFs need Ghostscript (exact page size, trim box, CMYK). Install it (macOS: `brew install ghostscript`; Debian/Ubuntu: " +
+        "`sudo apt-get install ghostscript`) or set BRAND_STUDIO_GS to its path.",
+    );
+  }
+  return found;
 }

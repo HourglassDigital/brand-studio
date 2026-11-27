@@ -76,6 +76,17 @@ MVP set:
 | `x` | X / Twitter | 1600×900 |
 | `youtube` | YouTube thumbnail / cover | 1920×1080 |
 
+**Print shapes** are physical pieces measured in mm (`PRINT_SHAPES` in `engine/shapes.mjs`):
+
+| Shape | Piece | Trim | Bleed | Safe |
+|---|---|---|---|---|
+| `business-card` | AU business card, front + back | 90 × 55 mm | 3 mm (`--bleed 5` for Officeworks) | 4 mm |
+
+A print render takes `{ css, pages: { front, back } }`, writes one print PDF (one page per
+side, exact physical size, TrimBox/BleedBox set, fonts embedded, `--cmyk` for CMYK via
+Ghostscript) plus a trimmed 300 dpi PNG preview per side, carries no attribution pill, and
+uses a 6 pt legibility floor. `{{qr}}` renders `data.qr.text` (a URL or vCard) as a vector QR.
+
 The shape is inferred from the prompt (platform mention) when possible, otherwise asked or
 defaulted. A prompt may override the shape explicitly.
 
@@ -124,7 +135,7 @@ The engines do these jobs and no design:
 - **attribution** — every render carries a small "Powered by Hourglass AI" mark (hourglass
   glyph + deep-teal text on a light frosted pill with a soft teal glow), pinned
   bottom-centre by `htmlDoc()` (the one deliberate exception to the engine carrying no
-  look). The pill sits at 85% white so the backdrop stays light on any page, keeping the
+  look). Print shapes never carry it. The pill sits at 85% white so the backdrop stays light on any page, keeping the
   teal above the contrast floor on both light and dark brands; authored content must keep
   that bottom-centre strip clear or the legibility gate flags the collision.
 

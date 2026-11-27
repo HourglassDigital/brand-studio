@@ -4,8 +4,8 @@
       "name": "engine-tests",
       "suite": "floor",
       "description": "engine npm test: shapes, store, logo, markup and the Chromium render and legibility tests; none may skip",
-      "run": "bash scripts/floor-gate.sh engine 30",
-      "must_fail": "EVALS_FLOOR_CANARY=engine bash scripts/floor-gate.sh engine 30"
+      "run": "bash scripts/floor-gate.sh engine 36",
+      "must_fail": "EVALS_FLOOR_CANARY=engine bash scripts/floor-gate.sh engine 36"
     },
     {
       "name": "chart-engine-tests",

@@ -8,6 +8,7 @@
     "test": "node --test 'test/*.test.mjs'"
   },
   "dependencies": {
-    "playwright-core": "^1.49.0"
+    "playwright-core": "^1.49.0",
+    "qrcode": "^1.5.4"
   }
 }

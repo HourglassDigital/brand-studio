@@ -237,7 +237,9 @@ export function makeBrand(profile = {}, { assetsDir } = {}) {
     mark { background: transparent; color: inherit; padding: 0; }
     /* Generic logo plumbing for the logo() helper / {{logo}} placeholder. */
     .bs-logo { display: inline-flex; align-items: center; gap: 10px; }
-    .bs-logo svg { height: var(--logo-h, auto); width: auto; }
+    /* Direct child only: a lockup that nests an <svg> for its mark must keep the inner one as authored.
+       overflow visible: at small print sizes the rounded box otherwise shaves the last glyph. */
+    .bs-logo > svg { height: var(--logo-h, auto); width: auto; overflow: visible; }
     .bs-logo__word {
       font-family: '${headlineFamily}', system-ui, sans-serif;
       font-weight: 700; line-height: 0.98; letter-spacing: -0.01em;
@@ -248,12 +250,28 @@ export function makeBrand(profile = {}, { assetsDir } = {}) {
     `;
   }
 
-  function htmlDoc({ width, height, css, body }) {
+  // `print` is a physical size in mm ({ width, height }, bleed included). A print doc is
+  // sized in mm, carries one .frame per page (body may be an array: front, back, ...) so
+  // the PDF comes out one page per side, and never carries the attribution pill: the
+  // pill is a social-asset convention and has no place on a physical piece.
+  function htmlDoc({ width, height, css, body, print = null }) {
+    const bodies = Array.isArray(body) ? body : [body];
+    if (bodies.length > 1 && !print) throw new Error("Multi-page documents are for print shapes only.");
+    const pill = print ? "" : `<div class="bs-attribution">${ATTRIBUTION_MARKUP}</div>`;
+    const size = print
+      ? `.frame { width: ${print.width}mm; height: ${print.height}mm; break-after: page; }
+      .frame:last-child { break-after: auto; }
+      @page { size: ${print.width}mm ${print.height}mm; margin: 0; }
+      html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }`
+      : `.frame { width: ${width}px; height: ${height}px; }`;
+    const frames = bodies
+      .map((b, i) => `<div class="frame"${i === 0 ? ' id="frame"' : ""} data-page="${i + 1}">${b}${pill}</div>`)
+      .join("");
     return `<!doctype html><html><head><meta charset="utf-8">${fontLink()}
     <style>${baseCss()}${css || ""}
-      .frame { width: ${width}px; height: ${height}px; }
+      ${size}
     </style></head>
-    <body><div class="frame" id="frame">${body}<div class="bs-attribution">${ATTRIBUTION_MARKUP}</div></div></body></html>`;
+    <body>${frames}</body></html>`;
   }
 
   return {
