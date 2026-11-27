@@ -30,6 +30,8 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: engine/package-lock.json
+      - name: Print toolchain (Ghostscript, poppler) for the print-PDF tests
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ghostscript poppler-utils
       - run: npm ci --no-audit --no-fund
         working-directory: ${{ env.PKG }}
       - name: Run the gate (must pass)

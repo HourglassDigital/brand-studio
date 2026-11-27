@@ -152,6 +152,7 @@ Standard canvases, inferred from the prompt's platform unless you specify one:
 | `linkedin` | LinkedIn post | 1200×1200 |
 | `x` | X / Twitter | 1600×900 |
 | `youtube` | YouTube thumbnail / cover | 1920×1080 |
+| `business-card` | Printed business card, front + back (print PDF, CMYK) | 90×55 mm + 3 mm bleed |
 
 ## Where your brands live
 
